@@ -1,0 +1,352 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>homework1</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-10-11"><meta name="DC.source" content="homework1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Q1.</a></li><li><a href="#3">Q2.</a></li><li><a href="#4">Q3.</a></li><li><a href="#5">Q4.</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Q1.</h2><p>Here I have simulated data for an observer performing a 2AFC method of constant stimuli task. This task has 7 levels with 4 being the level at which the subject performs by chance. The simulated data has been created using a logistic psychometric function (PF).</p><pre class="codeinput">alpha = 4;
+beta = 1.5;
+levels = 7;
+x = 1:1:levels;
+n_trials = 40;
+
+rand_values = rand(levels, n_trials);
+
+prob_x = (1 ./ (1 + exp(-beta * (x - alpha))));
+ans_choice = rand_values &lt; prob_x';
+
+y = mean(ans_choice, 2);
+yerr = std(ans_choice, [], 2)./sqrt(n_trials);
+
+figure();
+subplot(2, 1, 1)
+errorbar(x,y*100,yerr*100,<span class="string">"vertical"</span>,<span class="string">"ks"</span>, <span class="string">'MarkerSize'</span>, 5, <span class="string">'LineWidth'</span>, 2)
+ylabel(<span class="string">'% correct'</span>)
+xlabel(<span class="string">'Levels'</span>)
+xticks(x)
+yticks(0:25:100)
+title(<span class="string">'Simulated data using Logistic PF'</span>)
+</pre><img vspace="5" hspace="5" src="homework1_01.png" alt=""> <h2 id="3">Q2.</h2><p>Here the simulated data is fit using logistic PF by minimizng the negative log-likelihood.</p><pre class="codeinput">psychometric_function = @(params, x) (1 ./ (1 + exp(-params(2) * (x - params(1)))));
+neg_log_likelihood = @(params) -sum(y' .* log(psychometric_function(params, x)) + (1 - y') .* log(1 - psychometric_function(params, x)));
+
+initial_params = [1, 1];
+fitted_params = fminsearch(neg_log_likelihood, initial_params);
+
+<span class="comment">% Extract the fitted parameters</span>
+alpha_fit = fitted_params(1);
+beta_fit = fitted_params(2);
+fprintf(<span class="string">'Fitted Parameters:\n'</span>);
+fprintf(<span class="string">'Alpha: %f\n'</span>, alpha_fit);
+fprintf(<span class="string">'Beta: %f\n'</span>, beta_fit);
+
+<span class="comment">% Plot the original data and the fitted psychometric function</span>
+x_values = 1:0.01:levels;
+y_fit = psychometric_function(fitted_params, x_values);
+
+subplot(2, 1, 2)
+errorbar(x,y*100,yerr*100,<span class="string">"vertical"</span>,<span class="string">"ks"</span>, <span class="string">'MarkerSize'</span>, 5, <span class="string">'LineWidth'</span>, 2, <span class="string">'DisplayName'</span>, <span class="string">'data'</span>);
+hold <span class="string">on</span>;
+plot(x_values, y_fit * 100, <span class="string">'b-'</span>, <span class="string">'LineWidth'</span>, 2, <span class="string">'DisplayName'</span>, <span class="string">'logistic fit'</span>);
+xlabel(<span class="string">'Levels'</span>);
+xticks(x)
+yticks(0:25:100)
+ylabel(<span class="string">'% correct'</span>);
+legend(<span class="string">'Location'</span>, <span class="string">'Best'</span>);
+title(<span class="string">'PF Fitting'</span>);
+</pre><pre class="codeoutput">Fitted Parameters:
+Alpha: 3.849148
+Beta: 1.639007
+</pre><img vspace="5" hspace="5" src="homework1_02.png" alt=""> <h2 id="4">Q3.</h2><p>I have repeated the simulations above using Monte-Carlo method. The distribution of estimated alpha and beta parameters are plotted alongside the actual alpha and beta parameters used to simulate the data. Number of Monte Carlo simulations</p><pre class="codeinput">num_simulations = 10000;
+estimated_params = zeros(num_simulations, 2);
+
+<span class="keyword">for</span> i = 1:num_simulations
+    <span class="comment">% Simulated data</span>
+    rand_values = rand(levels, n_trials);
+    prob_x = 1 ./ (1 + exp(-beta * (x - alpha)));
+    ans_choice = rand_values &lt; prob_x';
+
+    y = mean(ans_choice, 2);
+
+    <span class="comment">% Fitting the psychometric function</span>
+    psychometric_function = @(params, x) (1 ./ (1 + exp(-params(2) * (x - params(1)))));
+    neg_log_likelihood = @(params) -sum(y' .* log(psychometric_function(params, x)) + (1 - y') .* log(1 - psychometric_function(params, x)));
+
+    initial_params = [1, 1];
+    fitted_params = fminsearch(neg_log_likelihood, initial_params);
+    estimated_params(i, :) = fitted_params(1:2);
+<span class="keyword">end</span>
+
+<span class="comment">% Plot a histogram of the estimated parameters (alpha and beta)</span>
+figure();
+subplot(1, 2, 1);
+histogram(estimated_params(:, 1), 20, <span class="string">'FaceColor'</span>, <span class="string">'b'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'w'</span>); hold <span class="string">on</span>;
+xline(alpha,<span class="string">'-'</span>,{<span class="string">'alpha true'</span>}, <span class="string">'LineWidth'</span>, 2);
+xlabel(<span class="string">'Alpha'</span>);
+ylabel(<span class="string">'Frequency'</span>);
+title(<span class="string">'Histogram of Estimated Alpha'</span>);
+
+subplot(1, 2, 2);
+histogram(estimated_params(:, 2), 20, <span class="string">'FaceColor'</span>, <span class="string">'r'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'w'</span>); hold <span class="string">on</span>;
+xline(beta,<span class="string">'-'</span>,{<span class="string">'beta true'</span>}, <span class="string">'LineWidth'</span>, 2);
+xlabel(<span class="string">'Beta'</span>);
+ylabel(<span class="string">'Frequency'</span>);
+title(<span class="string">'Histogram of Estimated Beta'</span>);
+
+figure();
+hist3(estimated_params, [20, 20], <span class="string">'CDataMode'</span>, <span class="string">'auto'</span>, <span class="string">'FaceColor'</span>, <span class="string">'interp'</span>);
+xlabel(<span class="string">'Alpha'</span>);
+ylabel(<span class="string">'Beta'</span>);
+title(<span class="string">'2-D Histogram of Estimated Alpha and Beta'</span>);
+colorbar;
+legend(<span class="string">'Location'</span>, <span class="string">'Best'</span>);
+</pre><img vspace="5" hspace="5" src="homework1_03.png" alt=""> <img vspace="5" hspace="5" src="homework1_04.png" alt=""> <h2 id="5">Q4.</h2><p>Here I repeated the data simulation and model fitting using logistic PF. This was followed by fitting the data using Weibull PF. Simulated data</p><pre class="codeinput">rand_values = rand(levels, n_trials);
+prob_x = 1 ./ (1 + exp(-beta * (x - alpha)));
+ans_choice = rand_values &lt; prob_x';
+y = mean(ans_choice, 2);
+
+<span class="comment">% Log PF</span>
+logistic_function = @(params, x) (1 ./ (1 + exp(-params(2) * (x - params(1)))));
+logistic_neg_log_likelihood = @(params) -sum(y' .* log(logistic_function(params, x)) + (1 - y') .* log(1 - logistic_function(params, x)));
+
+<span class="comment">% Weibull PF</span>
+weibull_function = @(params, x) (1 - exp(-(x./params(1)).^params(2)));
+weibull_neg_log_likelihood = @(params) -sum(y' .* log(weibull_function(params, x)) + (1 - y') .* log(1 - weibull_function(params, x)));
+
+<span class="comment">% Parameter estimates</span>
+initial_params = [1, 1, 1];
+logistic_fitted_params = fminsearch(logistic_neg_log_likelihood, initial_params);
+weibull_fitted_params = fminsearch(weibull_neg_log_likelihood, initial_params);
+
+x_values = 1:0.01:levels;
+logistic_fit = logistic_function(logistic_fitted_params, x_values);
+weibull_fit = weibull_function(weibull_fitted_params, x_values);
+
+<span class="comment">% Plot the original data, the logistic fit, and the Weibull fit</span>
+figure;
+errorbar(x,y*100,yerr*100,<span class="string">"vertical"</span>,<span class="string">"ks"</span>, <span class="string">'MarkerSize'</span>, 5, <span class="string">'LineWidth'</span>, 2, <span class="string">'DisplayName'</span>, <span class="string">'data'</span>);
+hold <span class="string">on</span>;
+plot(x_values, logistic_fit * 100, <span class="string">'b-'</span>, <span class="string">'LineWidth'</span>, 2, <span class="string">'DisplayName'</span>, <span class="string">'Logistic PF'</span>);
+plot(x_values, weibull_fit * 100, <span class="string">'g-'</span>, <span class="string">'LineWidth'</span>, 2, <span class="string">'DisplayName'</span>, <span class="string">'Weibull PF'</span>);
+xticks(x)
+yticks(0:25:100)
+xlabel(<span class="string">'Levels'</span>);
+ylabel(<span class="string">'Percentage correct'</span>);
+legend(<span class="string">'Location'</span>, <span class="string">'Best'</span>);
+title(<span class="string">'Psychometric Function Fitting Comparison'</span>);
+</pre><img vspace="5" hspace="5" src="homework1_05.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear; close all; clc;
+
+%% Q1.
+% Here I have simulated data for an observer performing a 2AFC method of
+% constant stimuli task. This task has 7 levels with 4 being the level at
+% which the subject performs by chance. The simulated data has been created
+% using a logistic psychometric function (PF).
+alpha = 4;
+beta = 1.5;
+levels = 7;
+x = 1:1:levels;
+n_trials = 40;
+
+rand_values = rand(levels, n_trials);
+
+prob_x = (1 ./ (1 + exp(-beta * (x - alpha))));
+ans_choice = rand_values < prob_x';
+
+y = mean(ans_choice, 2);
+yerr = std(ans_choice, [], 2)./sqrt(n_trials);
+
+figure();
+subplot(2, 1, 1)
+errorbar(x,y*100,yerr*100,"vertical","ks", 'MarkerSize', 5, 'LineWidth', 2)
+ylabel('% correct')
+xlabel('Levels')
+xticks(x)
+yticks(0:25:100)
+title('Simulated data using Logistic PF')
+
+%% Q2.
+% Here the simulated data is fit using logistic PF by minimizng the
+% negative log-likelihood.
+psychometric_function = @(params, x) (1 ./ (1 + exp(-params(2) * (x - params(1)))));
+neg_log_likelihood = @(params) -sum(y' .* log(psychometric_function(params, x)) + (1 - y') .* log(1 - psychometric_function(params, x)));
+
+initial_params = [1, 1];
+fitted_params = fminsearch(neg_log_likelihood, initial_params);
+
+% Extract the fitted parameters
+alpha_fit = fitted_params(1);
+beta_fit = fitted_params(2);
+fprintf('Fitted Parameters:\n');
+fprintf('Alpha: %f\n', alpha_fit);
+fprintf('Beta: %f\n', beta_fit);
+
+% Plot the original data and the fitted psychometric function
+x_values = 1:0.01:levels;
+y_fit = psychometric_function(fitted_params, x_values);
+
+subplot(2, 1, 2)
+errorbar(x,y*100,yerr*100,"vertical","ks", 'MarkerSize', 5, 'LineWidth', 2, 'DisplayName', 'data');
+hold on;
+plot(x_values, y_fit * 100, 'b-', 'LineWidth', 2, 'DisplayName', 'logistic fit');
+xlabel('Levels');
+xticks(x)
+yticks(0:25:100)
+ylabel('% correct');
+legend('Location', 'Best');
+title('PF Fitting');
+
+%% Q3.
+% I have repeated the simulations above using Monte-Carlo method. The
+% distribution of estimated alpha and beta parameters are plotted alongside
+% the actual alpha and beta parameters used to simulate the data.
+% Number of Monte Carlo simulations
+num_simulations = 10000;
+estimated_params = zeros(num_simulations, 2);
+
+for i = 1:num_simulations
+    % Simulated data
+    rand_values = rand(levels, n_trials);
+    prob_x = 1 ./ (1 + exp(-beta * (x - alpha)));
+    ans_choice = rand_values < prob_x';
+
+    y = mean(ans_choice, 2);
+    
+    % Fitting the psychometric function
+    psychometric_function = @(params, x) (1 ./ (1 + exp(-params(2) * (x - params(1)))));
+    neg_log_likelihood = @(params) -sum(y' .* log(psychometric_function(params, x)) + (1 - y') .* log(1 - psychometric_function(params, x)));
+
+    initial_params = [1, 1];
+    fitted_params = fminsearch(neg_log_likelihood, initial_params);
+    estimated_params(i, :) = fitted_params(1:2);
+end
+
+% Plot a histogram of the estimated parameters (alpha and beta)
+figure();
+subplot(1, 2, 1);
+histogram(estimated_params(:, 1), 20, 'FaceColor', 'b', 'EdgeColor', 'w'); hold on;
+xline(alpha,'-',{'alpha true'}, 'LineWidth', 2);
+xlabel('Alpha');
+ylabel('Frequency');
+title('Histogram of Estimated Alpha');
+
+subplot(1, 2, 2);
+histogram(estimated_params(:, 2), 20, 'FaceColor', 'r', 'EdgeColor', 'w'); hold on;
+xline(beta,'-',{'beta true'}, 'LineWidth', 2);
+xlabel('Beta');
+ylabel('Frequency');
+title('Histogram of Estimated Beta');
+
+figure();
+hist3(estimated_params, [20, 20], 'CDataMode', 'auto', 'FaceColor', 'interp');
+xlabel('Alpha');
+ylabel('Beta');
+title('2-D Histogram of Estimated Alpha and Beta');
+colorbar;
+legend('Location', 'Best');
+
+%% Q4.
+% Here I repeated the data simulation and model fitting using logistic PF.
+% This was followed by fitting the data using Weibull PF.
+% Simulated data
+rand_values = rand(levels, n_trials);
+prob_x = 1 ./ (1 + exp(-beta * (x - alpha)));
+ans_choice = rand_values < prob_x';
+y = mean(ans_choice, 2);
+
+% Log PF
+logistic_function = @(params, x) (1 ./ (1 + exp(-params(2) * (x - params(1)))));
+logistic_neg_log_likelihood = @(params) -sum(y' .* log(logistic_function(params, x)) + (1 - y') .* log(1 - logistic_function(params, x)));
+
+% Weibull PF
+weibull_function = @(params, x) (1 - exp(-(x./params(1)).^params(2)));
+weibull_neg_log_likelihood = @(params) -sum(y' .* log(weibull_function(params, x)) + (1 - y') .* log(1 - weibull_function(params, x)));
+
+% Parameter estimates
+initial_params = [1, 1, 1];
+logistic_fitted_params = fminsearch(logistic_neg_log_likelihood, initial_params);
+weibull_fitted_params = fminsearch(weibull_neg_log_likelihood, initial_params);
+
+x_values = 1:0.01:levels;
+logistic_fit = logistic_function(logistic_fitted_params, x_values);
+weibull_fit = weibull_function(weibull_fitted_params, x_values);
+
+% Plot the original data, the logistic fit, and the Weibull fit
+figure;
+errorbar(x,y*100,yerr*100,"vertical","ks", 'MarkerSize', 5, 'LineWidth', 2, 'DisplayName', 'data');
+hold on;
+plot(x_values, logistic_fit * 100, 'b-', 'LineWidth', 2, 'DisplayName', 'Logistic PF');
+plot(x_values, weibull_fit * 100, 'g-', 'LineWidth', 2, 'DisplayName', 'Weibull PF');
+xticks(x)
+yticks(0:25:100)
+xlabel('Levels');
+ylabel('Percentage correct');
+legend('Location', 'Best');
+title('Psychometric Function Fitting Comparison');
+
+##### SOURCE END #####
+--></body></html>

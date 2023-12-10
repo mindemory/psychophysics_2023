@@ -1,0 +1,444 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Mrugank_homework2</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-11-11"><meta name="DC.source" content="Mrugank_homework2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Functions to compute d-prime</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>The experiment here is a 2AFC method of constant stimuli. There are 10 stimuli levels and a noise level that is chosen randomly from one of the stimulus levels. At each trial, one of the stimuli levels are chosen and the stimulus is presented either on the left or right randomly, and the task of the subject is to determine if the stimulus is on the left or on the right. Initialization</p><pre class="codeinput">nStim = 10;  <span class="comment">% Number of stimuli</span>
+nTrials = 1e3;
+totalTrials = nStim * nTrials;
+stimuli = linspace(0, 10, nStim);  <span class="comment">% Stimulus - levels selected</span>
+noiseLvl = min(stimuli) + (max(stimuli) - min(stimuli)) * rand; <span class="comment">% Randomly choose noise level</span>
+<span class="comment">% If the noise is lower than signal its a detection task, if the noise is</span>
+<span class="comment">% in between, its a discrimination task</span>
+constNoise = 0.6; <span class="comment">% Constant noise</span>
+intervalBias = 0.5; <span class="comment">% Bias value, get interesting plots when bias = 1 and -1 so this is correct!</span>
+
+<span class="comment">% Plot stimulus and noise distributions</span>
+<span class="comment">% Visualziing stimuli and noise ditributions to make sure the task is hard</span>
+<span class="comment">% enough but not too hard</span>
+figure;
+x = linspace(-5, 15, 1000);
+<span class="keyword">for</span> i = 1:nStim
+    y = normpdf(x, stimuli(i), 1);
+    fill(x, y, <span class="string">'b'</span>, <span class="string">'FaceAlpha'</span>, 0.3, <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+    hold <span class="string">on</span>;
+<span class="keyword">end</span>
+fill(x, normpdf(x, noiseLvl, 1), <span class="string">'r'</span>, <span class="string">'FaceAlpha'</span>, 0.5);
+hStimulus = plot(NaN, NaN, <span class="string">'b'</span>, <span class="string">'DisplayName'</span>, <span class="string">'Stimulus'</span>);
+hNoise = plot(NaN, NaN, <span class="string">'r'</span>, <span class="string">'DisplayName'</span>, <span class="string">'Noise'</span>);
+xlabel(<span class="string">'Stimulus/Noise Level'</span>);
+ylabel(<span class="string">'Probability Density'</span>);
+title(<span class="string">'Distributions for Stimuli and Noise'</span>);
+legend([hStimulus, hNoise], <span class="string">'Location'</span>, <span class="string">'northeast'</span>);
+
+<span class="comment">% Simulate side where the signal is on each trial uniformly</span>
+<span class="comment">% Seq is the sequence of stimuli levels, chosen randomly. One step close to</span>
+<span class="comment">% adding history effects :/</span>
+side = randsample([-1, 1], totalTrials, true);
+seq = repmat(stimuli, 1, nTrials);
+seq = seq(randperm(length(seq)));
+
+<span class="comment">% Psychometric function for performing the decision making</span>
+logistic = @(x) 1 ./ (1 + exp(-x));
+
+<span class="comment">% Sample noise and signal from a standard normal distribution given the</span>
+<span class="comment">% mean which is the signal and the noise levels</span>
+noiseSamp = normrnd(noiseLvl, 1, [1, totalTrials]);
+signalSamp = normrnd(seq, 1, [1, totalTrials]);
+
+<span class="comment">% Get the probablility of making response given the signal and noise for</span>
+<span class="comment">% different conditions</span>
+prob = logistic(signalSamp - noiseSamp);
+probWithNoise = logistic(signalSamp - noiseSamp + constNoise);
+probWithIntervalBias = logistic(signalSamp - noiseSamp);
+probWithIntervalBias(side == 1) = min(probWithIntervalBias(side == 1) + intervalBias/2, 1);
+probWithIntervalBias(side == -1) = max(probWithIntervalBias(side == -1) - intervalBias/2, 0);
+
+<span class="comment">% Get ther respones by comparing probablity to a random number. Turnint it</span>
+<span class="comment">% into -1 or 1 depending on the side of the stimulus</span>
+resp = 2 * (rand(1, totalTrials) &lt; prob) - 1;
+resp = resp .* side;
+respWithNoise = 2 * (rand(1, totalTrials) &lt; probWithNoise) - 1;
+respWithNoise = respWithNoise .* side;
+respWithIntervalBias = 2 * (rand(1, totalTrials) &lt; probWithIntervalBias) - 1;
+respWithIntervalBias = respWithIntervalBias .* side;
+
+<span class="comment">% Initialize a structure to store d' on each side and d' aggregated (i am</span>
+<span class="comment">% not entirely sure of the aggregate d' here but seems to work)</span>
+metrics = struct(<span class="string">'normal'</span>, zeros(2, nStim), <span class="string">'noise'</span>, zeros(2, nStim), <span class="keyword">...</span>
+                <span class="string">'intervalBias'</span>, zeros(2, nStim));
+aggMetrics = struct(<span class="string">'normal'</span>, zeros(1, nStim), <span class="string">'noise'</span>, zeros(1, nStim), <span class="keyword">...</span>
+                <span class="string">'intervalBias'</span>, zeros(1, nStim));
+
+<span class="comment">% Simulating the experiment as a psychophysics task and computing d'</span>
+<span class="comment">% without noise, with noise and with interval bias for each side</span>
+<span class="keyword">for</span> i = 1:nStim
+    <span class="keyword">for</span> j = 1:2
+        sVal = 2 * j - 3;
+        trials = (seq == stimuli(i)) &amp; (side == sVal);
+        <span class="comment">% Without noise</span>
+        metrics.normal(j, i) = calcDPrime(resp, trials, sVal);
+        <span class="comment">% With constant noise</span>
+        metrics.noise(j, i) = calcDPrime(respWithNoise, trials, sVal);
+        <span class="comment">% With interval bias</span>
+        metrics.intervalBias(j, i) = calcDPrime(respWithIntervalBias, trials, sVal);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Simulating the experiment as a psychophysics task and computing d'</span>
+<span class="comment">% without noise, with noise and with interval bias as an aggregate</span>
+<span class="keyword">for</span> i = 1:nStim
+    trialsleft = (seq == stimuli(i)) &amp; (side == -1);
+    trialsright = (seq == stimuli(i)) &amp; (side == 1);
+    <span class="comment">% Without noise</span>
+    aggMetrics.normal(i) = calcDPrimeAggregate(resp, trialsleft, trialsright);
+    <span class="comment">% With constant noise</span>
+    aggMetrics.noise(i) = calcDPrimeAggregate(respWithNoise, trialsleft, trialsright);
+    <span class="comment">% With interval bias</span>
+    aggMetrics.intervalBias(i) = calcDPrimeAggregate(respWithIntervalBias, trialsleft, trialsright);
+<span class="keyword">end</span>
+
+<span class="comment">% d-prime for left and right sides</span>
+figure;
+plot(metrics.normal(1, :), metrics.normal(2, :), <span class="string">'ro-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Normal'</span>);
+hold <span class="string">on</span>;
+plot(metrics.noise(1, :), metrics.noise(2, :), <span class="string">'bo-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Noise'</span>);
+plot(metrics.intervalBias(1, :), metrics.intervalBias(2, :), <span class="string">'mo-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Interval Bias'</span>);
+xlabel(<span class="string">"d' Left"</span>);
+ylabel(<span class="string">"d' Right"</span>);
+title(<span class="string">"d' Left vs Right"</span>);
+grid <span class="string">on</span>;
+legend(<span class="string">'Location'</span>, <span class="string">'best'</span>);
+hold <span class="string">off</span>;
+
+<span class="comment">% d-prime as a function of stimulus level</span>
+figure;
+plot(stimuli, aggMetrics.normal, <span class="string">'ro-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Normal'</span>);
+hold <span class="string">on</span>;
+plot(stimuli, aggMetrics.noise, <span class="string">'bo-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Noise'</span>);
+plot(stimuli, aggMetrics.intervalBias, <span class="string">'mo-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Interval Bias'</span>);
+xlabel(<span class="string">"Stimulus Level"</span>);
+ylabel(<span class="string">"d' Aggregate"</span>);
+title(<span class="string">"d' as a Function of Stimulus Level"</span>);
+legend(<span class="string">'Location'</span>, <span class="string">'best'</span>);
+grid <span class="string">on</span>;
+hold <span class="string">off</span>;
+
+<span class="comment">% d-prime for interval bias before and after correction</span>
+figure;
+plot(stimuli, aggMetrics.intervalBias, <span class="string">'ko-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Raw Bias'</span>);
+hold <span class="string">on</span>;
+plot(stimuli,  (metrics.intervalBias(1, :)+  metrics.intervalBias(2, :))./sqrt(2), <span class="string">'mo-'</span>, <span class="string">'LineWidth'</span>, 1.5, <span class="string">'DisplayName'</span>, <span class="string">'Corrected Bias'</span>);
+xlabel(<span class="string">"Stimulus Level"</span>);
+ylabel(<span class="string">"d' Aggregate"</span>);
+title(<span class="string">"d' as a Function of Stimulus Level"</span>);
+legend(<span class="string">'Location'</span>, <span class="string">'best'</span>);
+grid <span class="string">on</span>;
+hold <span class="string">off</span>;
+
+<span class="comment">% Fit a cumulative Gaussian to the d' data</span>
+<span class="comment">% Comment: This makes sense to me because dprime should saturate when the</span>
+<span class="comment">% trials are too easy and too hard, I guess I am not getting the point of</span>
+<span class="comment">% computing the parameters, so analysis after this probably makes no sense</span>
+fitFunc = @(b, x) 1 ./ (1 + exp(-b(1) * (x - b(2))));
+betaNormal = nlinfit(stimuli, aggMetrics.normal, fitFunc, rand(2, 1));
+betaNoise = nlinfit(stimuli, aggMetrics.noise, fitFunc, rand(2, 1));
+betaBias = nlinfit(stimuli, aggMetrics.intervalBias, fitFunc, rand(2, 1));
+
+<span class="comment">% Use the fitted parameters to estimate d' at various stimulus levels</span>
+stimLevelsFine = linspace(min(stimuli), max(stimuli), 1e3);
+dPrimeEstNormal = fitFunc(betaNormal, stimLevelsFine);
+dPrimeEstNoise = fitFunc(betaNoise, stimLevelsFine);
+dPrimeEstBias = fitFunc(betaBias, stimLevelsFine);
+
+figure;
+scatter(dPrimeEstNormal, dPrimeEstBias);
+xlabel(<span class="string">'d'' Estimate - Normal'</span>);
+ylabel(<span class="string">'d'' Estimate - With Bias'</span>);
+title(<span class="string">'Comparison of d'' Estimates'</span>);
+grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="Mrugank_homework2_01.png" alt=""> <h2 id="3">Functions to compute d-prime</h2><pre class="codeinput"><span class="keyword">function</span> dP = calcDPrime(responses, trials, sVal)
+    <span class="comment">% This function computes dprime separately for left and right sides</span>
+    hits = sum(responses(trials) == sVal);
+    misses = sum(responses(trials) == -sVal);
+    fAlarms = sum(responses(trials) == -sVal);
+    cRejects = sum(responses(trials) == sVal);
+    hitRate = (hits + 0.5) / (hits + misses + 1);
+    fAlarmRate = (fAlarms + 0.5) / (fAlarms + cRejects + 1);
+    dP = norminv(hitRate) - norminv(fAlarmRate);
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> dP = calcDPrimeAggregate(responses, trialsLeft, trialsRight)
+    <span class="comment">% This function compute dprime aggregated over left and right side</span>
+    hits = sum(responses(trialsLeft) == -1) + sum(responses(trialsRight) == 1);
+    misses = sum(responses(trialsLeft) == 1) + sum(responses(trialsRight) == -1);
+    fAlarms = sum(responses(trialsLeft) == 1) + sum(responses(trialsRight) == -1);
+    cRejects = sum(responses(trialsLeft) == -1) + sum(responses(trialsRight) == 1);
+    hitRate = (hits + 0.5) / (hits + misses + 1);
+    fAlarmRate = (fAlarms + 0.5) / (fAlarms + cRejects + 1);
+    dP = norminv(hitRate) - norminv(fAlarmRate);
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Warning: Unable to find a step that will decrease SSE.  Returning results from
+last iteration. 
+Warning: Some columns of the Jacobian are effectively zero at the solution,
+indicating that the model is insensitive to some of its parameters.  That may
+be because those parameters are not present in the model, or otherwise do not
+affect the predicted values.  It may also be due to numerical underflow in the
+model function, which can sometimes be avoided by choosing better initial
+parameter values, or by rescaling or recentering.  Parameter estimates may be
+unreliable. 
+</pre><img vspace="5" hspace="5" src="Mrugank_homework2_02.png" alt=""> <img vspace="5" hspace="5" src="Mrugank_homework2_03.png" alt=""> <img vspace="5" hspace="5" src="Mrugank_homework2_04.png" alt=""> <img vspace="5" hspace="5" src="Mrugank_homework2_05.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear; close all; clc;
+%%
+% The experiment here is a 2AFC method of constant stimuli. There are 10
+% stimuli levels and a noise level that is chosen randomly from one of the
+% stimulus levels. At each trial, one of the stimuli levels are chosen and
+% the stimulus is presented either on the left or right randomly, and the
+% task of the subject is to determine if the stimulus is on the left or on
+% the right. 
+% Initialization
+nStim = 10;  % Number of stimuli
+nTrials = 1e3;
+totalTrials = nStim * nTrials;  
+stimuli = linspace(0, 10, nStim);  % Stimulus - levels selected
+noiseLvl = min(stimuli) + (max(stimuli) - min(stimuli)) * rand; % Randomly choose noise level
+% If the noise is lower than signal its a detection task, if the noise is
+% in between, its a discrimination task
+constNoise = 0.6; % Constant noise
+intervalBias = 0.5; % Bias value, get interesting plots when bias = 1 and -1 so this is correct!
+
+% Plot stimulus and noise distributions
+% Visualziing stimuli and noise ditributions to make sure the task is hard
+% enough but not too hard
+figure;
+x = linspace(-5, 15, 1000); 
+for i = 1:nStim
+    y = normpdf(x, stimuli(i), 1); 
+    fill(x, y, 'b', 'FaceAlpha', 0.3, 'EdgeColor', 'none'); 
+    hold on;
+end
+fill(x, normpdf(x, noiseLvl, 1), 'r', 'FaceAlpha', 0.5);
+hStimulus = plot(NaN, NaN, 'b', 'DisplayName', 'Stimulus');
+hNoise = plot(NaN, NaN, 'r', 'DisplayName', 'Noise');
+xlabel('Stimulus/Noise Level');
+ylabel('Probability Density');
+title('Distributions for Stimuli and Noise');
+legend([hStimulus, hNoise], 'Location', 'northeast');
+
+% Simulate side where the signal is on each trial uniformly
+% Seq is the sequence of stimuli levels, chosen randomly. One step close to
+% adding history effects :/
+side = randsample([-1, 1], totalTrials, true);
+seq = repmat(stimuli, 1, nTrials);
+seq = seq(randperm(length(seq)));
+
+% Psychometric function for performing the decision making 
+logistic = @(x) 1 ./ (1 + exp(-x));
+
+% Sample noise and signal from a standard normal distribution given the
+% mean which is the signal and the noise levels
+noiseSamp = normrnd(noiseLvl, 1, [1, totalTrials]);
+signalSamp = normrnd(seq, 1, [1, totalTrials]);
+
+% Get the probablility of making response given the signal and noise for
+% different conditions
+prob = logistic(signalSamp - noiseSamp);
+probWithNoise = logistic(signalSamp - noiseSamp + constNoise);
+probWithIntervalBias = logistic(signalSamp - noiseSamp);
+probWithIntervalBias(side == 1) = min(probWithIntervalBias(side == 1) + intervalBias/2, 1);
+probWithIntervalBias(side == -1) = max(probWithIntervalBias(side == -1) - intervalBias/2, 0);
+
+% Get ther respones by comparing probablity to a random number. Turnint it
+% into -1 or 1 depending on the side of the stimulus
+resp = 2 * (rand(1, totalTrials) < prob) - 1; 
+resp = resp .* side; 
+respWithNoise = 2 * (rand(1, totalTrials) < probWithNoise) - 1; 
+respWithNoise = respWithNoise .* side; 
+respWithIntervalBias = 2 * (rand(1, totalTrials) < probWithIntervalBias) - 1; 
+respWithIntervalBias = respWithIntervalBias .* side; 
+
+% Initialize a structure to store d' on each side and d' aggregated (i am
+% not entirely sure of the aggregate d' here but seems to work)
+metrics = struct('normal', zeros(2, nStim), 'noise', zeros(2, nStim), ...
+                'intervalBias', zeros(2, nStim));
+aggMetrics = struct('normal', zeros(1, nStim), 'noise', zeros(1, nStim), ...
+                'intervalBias', zeros(1, nStim));
+
+% Simulating the experiment as a psychophysics task and computing d'
+% without noise, with noise and with interval bias for each side
+for i = 1:nStim
+    for j = 1:2
+        sVal = 2 * j - 3;
+        trials = (seq == stimuli(i)) & (side == sVal);
+        % Without noise
+        metrics.normal(j, i) = calcDPrime(resp, trials, sVal);
+        % With constant noise
+        metrics.noise(j, i) = calcDPrime(respWithNoise, trials, sVal);
+        % With interval bias
+        metrics.intervalBias(j, i) = calcDPrime(respWithIntervalBias, trials, sVal);
+    end
+end
+
+% Simulating the experiment as a psychophysics task and computing d'
+% without noise, with noise and with interval bias as an aggregate
+for i = 1:nStim
+    trialsleft = (seq == stimuli(i)) & (side == -1);
+    trialsright = (seq == stimuli(i)) & (side == 1);
+    % Without noise
+    aggMetrics.normal(i) = calcDPrimeAggregate(resp, trialsleft, trialsright);
+    % With constant noise
+    aggMetrics.noise(i) = calcDPrimeAggregate(respWithNoise, trialsleft, trialsright);
+    % With interval bias
+    aggMetrics.intervalBias(i) = calcDPrimeAggregate(respWithIntervalBias, trialsleft, trialsright);
+end
+
+% d-prime for left and right sides
+figure;
+plot(metrics.normal(1, :), metrics.normal(2, :), 'ro-', 'LineWidth', 1.5, 'DisplayName', 'Normal');
+hold on;
+plot(metrics.noise(1, :), metrics.noise(2, :), 'bo-', 'LineWidth', 1.5, 'DisplayName', 'Noise');
+plot(metrics.intervalBias(1, :), metrics.intervalBias(2, :), 'mo-', 'LineWidth', 1.5, 'DisplayName', 'Interval Bias');
+xlabel("d' Left");
+ylabel("d' Right");
+title("d' Left vs Right");
+grid on;
+legend('Location', 'best');
+hold off;
+
+% d-prime as a function of stimulus level
+figure;
+plot(stimuli, aggMetrics.normal, 'ro-', 'LineWidth', 1.5, 'DisplayName', 'Normal');
+hold on;
+plot(stimuli, aggMetrics.noise, 'bo-', 'LineWidth', 1.5, 'DisplayName', 'Noise');
+plot(stimuli, aggMetrics.intervalBias, 'mo-', 'LineWidth', 1.5, 'DisplayName', 'Interval Bias');
+xlabel("Stimulus Level");
+ylabel("d' Aggregate");
+title("d' as a Function of Stimulus Level");
+legend('Location', 'best');
+grid on;
+hold off;
+
+% d-prime for interval bias before and after correction
+figure;
+plot(stimuli, aggMetrics.intervalBias, 'ko-', 'LineWidth', 1.5, 'DisplayName', 'Raw Bias');
+hold on;
+plot(stimuli,  (metrics.intervalBias(1, :)+  metrics.intervalBias(2, :))./sqrt(2), 'mo-', 'LineWidth', 1.5, 'DisplayName', 'Corrected Bias');
+xlabel("Stimulus Level");
+ylabel("d' Aggregate");
+title("d' as a Function of Stimulus Level");
+legend('Location', 'best');
+grid on;
+hold off;
+
+% Fit a cumulative Gaussian to the d' data
+% Comment: This makes sense to me because dprime should saturate when the
+% trials are too easy and too hard, I guess I am not getting the point of
+% computing the parameters, so analysis after this probably makes no sense
+fitFunc = @(b, x) 1 ./ (1 + exp(-b(1) * (x - b(2))));
+betaNormal = nlinfit(stimuli, aggMetrics.normal, fitFunc, rand(2, 1));
+betaNoise = nlinfit(stimuli, aggMetrics.noise, fitFunc, rand(2, 1));
+betaBias = nlinfit(stimuli, aggMetrics.intervalBias, fitFunc, rand(2, 1));
+
+% Use the fitted parameters to estimate d' at various stimulus levels
+stimLevelsFine = linspace(min(stimuli), max(stimuli), 1e3);
+dPrimeEstNormal = fitFunc(betaNormal, stimLevelsFine);
+dPrimeEstNoise = fitFunc(betaNoise, stimLevelsFine);
+dPrimeEstBias = fitFunc(betaBias, stimLevelsFine);
+
+figure;
+scatter(dPrimeEstNormal, dPrimeEstBias);
+xlabel('d'' Estimate - Normal');
+ylabel('d'' Estimate - With Bias');
+title('Comparison of d'' Estimates');
+grid on;
+
+%% Functions to compute d-prime
+function dP = calcDPrime(responses, trials, sVal)
+    % This function computes dprime separately for left and right sides
+    hits = sum(responses(trials) == sVal);
+    misses = sum(responses(trials) == -sVal);
+    fAlarms = sum(responses(trials) == -sVal);
+    cRejects = sum(responses(trials) == sVal);
+    hitRate = (hits + 0.5) / (hits + misses + 1);
+    fAlarmRate = (fAlarms + 0.5) / (fAlarms + cRejects + 1);
+    dP = norminv(hitRate) - norminv(fAlarmRate);
+end
+
+function dP = calcDPrimeAggregate(responses, trialsLeft, trialsRight)
+    % This function compute dprime aggregated over left and right side
+    hits = sum(responses(trialsLeft) == -1) + sum(responses(trialsRight) == 1);
+    misses = sum(responses(trialsLeft) == 1) + sum(responses(trialsRight) == -1);
+    fAlarms = sum(responses(trialsLeft) == 1) + sum(responses(trialsRight) == -1);
+    cRejects = sum(responses(trialsLeft) == -1) + sum(responses(trialsRight) == 1);
+    hitRate = (hits + 0.5) / (hits + misses + 1);
+    fAlarmRate = (fAlarms + 0.5) / (fAlarms + cRejects + 1);
+    dP = norminv(hitRate) - norminv(fAlarmRate);
+end
+##### SOURCE END #####
+--></body></html>
