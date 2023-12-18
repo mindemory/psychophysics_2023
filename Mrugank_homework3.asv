@@ -1,0 +1,79 @@
+clear; close all; clc;
+
+cohLevs = linspace(-1, 1, 20);
+Ncoh = length(cohLevs);
+ntrials = 2*1e3;
+nsubs = 7;
+
+psyfuncGenerator = @(x, p) normcdf(x, p(1), p(2));
+PSEs = [0 0 0 0;
+    -0.3 -0.3 0.3 0.3;
+    -0.5 -0.3 0.3 0.5;
+    -0.5 -0.3 0.3 0.5];
+
+slp = 4;
+slopes = [slp slp slp slp;
+          slp slp slp slp;
+          slp slp slp slp;
+          slp*1.5 slp slp*1.5 slp];
+
+data = zeros(size(PSEs, 2), size(PSEs, 1), Ncoh, nsubs, ntrials);
+color_vect = ["r*", "b*", "k*", "m*"];
+legnames = {'Adapt L: Attend yes', ...
+            'Adapt L: Attend no', ...
+            'Adapt R: Attend yes', ...
+            'Adapt R: Attend no'};
+
+figure();
+for modelN =  1:size(PSEs, 2)
+    subplot(2, 2, modelN)
+    hold on;
+    for ttype = 1:size(PSEs, 1)
+        for sub = 1:nsubs
+            this_PSE = PSEs(modelN, ttype) + randn(1, 1)*PSEs(modelN, ttype)/6;
+            this_slope = slopes(modelN, ttype) + randn(1, 1)*slopes(modelN, ttype)/6;
+            this_psyfunc = psyfuncGenerator(cohLevs, [this_PSE, 1/this_slope]);
+            this_data = rand(Ncoh, ntrials) < repmat(this_psyfunc', 1, ntrials);
+            data(modelN, ttype, :, sub, :) = this_data;
+            plot(cohLevs, squeeze(mean(this_data, 2)), color_vect(ttype));%, 'DisplayName', legnames{ttype})
+        end
+    end
+    xlabel('Coherence Level')
+    ylabel('Prob correct for Right')
+end
+
+nR = squeeze(sum(data(2, :, :, 1, :), 5));
+sign_mu = [-1 -1 1 1];
+attn_mu = [-1 0 1 0];
+nLogL = @(NR, NT, p) -sum(NR.*log(psyfuncGenerator(cohLevs, [p(1) p(2)])) + ...
+                     (NT-NR).*log(1-psyfuncGenerator(cohLevs, [p(1) p(2)])));
+M1_nlogNL = @(p) sum(arrayfun(@(idx) nLogL(nR(idx, :), ntrials, [0 p]), 1:4));
+M2_nlogNL = @(p) sum(arrayfun(@(idx) nLogL(nR(idx, :), ntrials, [p(1)*sign_mu(idx) p(2)]), 1:4));
+M3_nlogNL = @(p) sum(arrayfun(@(idx) nLogL(nR(idx, :), ntrials, [p(1)*sign_mu(idx)+p(2)*attn_mu(idx), p(3)]), 1:4));
+M3_nlogNL = @(p) sum(arrayfun(@(idx) nLogL(nR(idx, :), ntrials, [p(1)*sign_mu(idx)+p(2)*attn_mu(idx), p(3)]), 1:4));
+% M4_nlogNL = @(p) sum(arrayfun(@(idx) nLogL(nR(idx, :), ntrials, [p(1)*sign_mu(idx) p(2)]), 1:4));
+
+options = optimoptions(@fmincon, 'MaxIterations', 1e5, 'Display', 'off');
+lb_M1 = 0.01; ub_M1 = 2;
+init_M1 = rand*(ub_M1-lb_M1) + lb_M1;
+[estP_M1, min_NLL_M1] = fmincon(M1_nlogNL, init_M1, [], [], [], [], lb_M1, ub_M1, [], options);
+
+lb_M2 = [-0.8 0.01]; ub_M2 = [1 2];
+init_M2 = rand*(ub_M2-lb_M2) + lb_M2;
+[estP_M2, min_NLL_M2] = fmincon(M2_nlogNL, init_M2, [], [], [], [], lb_M2, ub_M2, [], options);
+
+lb_M3 = [-1 -1 0.01]; ub_M3 = [1 1 2];
+init_M3 = rand*(ub_M3-lb_M3) + lb_M3;
+[estP_M3, min_NLL_M3] = fmincon(M3_nlogNL, init_M3, [], [], [], [], lb_M3, ub_M3, [], options);
+disp(estP_M1)
+disp(estP_M2)
+% k = 1; 
+% n = 4 * ntrials;
+% 
+% % Calculate AIC and BIC
+% AIC = 2*k + 2*min_NLL_M1;
+% BIC = k*log(n) + 2*min_NLL_M1;
+
+% Output the results
+% fprintf('AIC: %f\n', AIC);
+% fprintf('BIC: %f\n', BIC);
