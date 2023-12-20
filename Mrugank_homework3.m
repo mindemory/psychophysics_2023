@@ -111,9 +111,9 @@ for sub = 1:nsubs
         nR = squeeze(sum(data(modelN, :, :, sub, :), 5));
         
         M1_nlogNL = @(p) sum(arrayfun(@(idx) nLogL(nR(idx, :), ntrials, [0 p]), 1:4));
-%         parfor ii = 1:res
-%             D1(sub, modelN, ii) = M1_nlogNL(sig1_range(ii));
-%         end
+        parfor ii = 1:res
+            D1(sub, modelN, ii) = M1_nlogNL(sig1_range(ii));
+        end
         idx1 = find(D1(sub, modelN, :) == min(D1(sub, modelN, :)));
         bestNLL1 = D1(sub, modelN, idx1);
         interim1 = -D1(sub, modelN, :) + log(prior_M1);
@@ -127,9 +127,9 @@ for sub = 1:nsubs
         end
         
         M2_nlogNL = @(p) sum(arrayfun(@(idx) nLogL(nR(idx, :), ntrials, [p(1)*sign_mu(idx) p(2)]), 1:4));
-%         parfor ii = 1:res
-%             D2(sub, modelN, ii) = M2_nlogNL([mu2_range(ii), sig2_range(ii)]);
-%         end
+        parfor ii = 1:res
+            D2(sub, modelN, ii) = M2_nlogNL([mu2_range(ii), sig2_range(ii)]);
+        end
         idx2 = find(D2(sub, modelN, :) == min(D2(sub, modelN, :)));
         bestNLL2 = D2(sub, modelN, idx2);
         interim2 = -D2(sub, modelN, :) + log(M2_jointpriornorm);
