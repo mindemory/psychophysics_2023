@@ -11,7 +11,7 @@ nStim = 10;  % Number of stimuli
 nTrials = 1e3;
 totalTrials = nStim * nTrials;  
 stimuli = linspace(0, 10, nStim);  % Stimulus - levels selected
-noiseLvl = 0; %min(stimuli) + (max(stimuli) - min(stimuli)) * rand; % Randomly choose noise level
+noiseLvl = 0;  % Noise level
 % If the noise is lower than signal its a detection task, if the noise is
 % in between, its a discrimination task
 constNoise = 0.6; % Constant noise

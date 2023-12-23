@@ -11,7 +11,7 @@ gt_models = 4;
 fit_models = 4;
 
 
-psyfuncGenerator = @(x, p) (0.5*0.05)+(1-0.05).*normcdf(x, p(1), p(2));
+psyfuncGenerator = @(x, p) (0.5*0)+(1-0).*normcdf(x, p(1), p(2));
 PSEs = [0 0 0 0;
     -0.3 -0.3 0.3 0.3;
     -0.6 -0.3 0.3 0.6;
@@ -69,7 +69,7 @@ ub = [1; 1; 1; 1];
 numParams = [1, 2, 3, 4];
 
 for sub = 1:nsubs
-    for modelN = 1:gt_models
+    parfor modelN = 1:gt_models
         nR = squeeze(sum(data(modelN, :, :, sub, :), 5));
         for modIdx = 1:fit_models
             initP = rand(numParams(modIdx), 1).*(ub(1:numParams(modIdx))-lb(1:numParams(modIdx))) + lb(1:numParams(modIdx));
@@ -140,7 +140,7 @@ end
 NLL_mean = squeeze(mean(NLLs, 1));
 AIC_mean = squeeze(mean(AICc, 1));
 BIC_mean = squeeze(mean(BICc, 1));
-BF_mean = squeeze(mean(BF_estim, 1));
+BF_median = squeeze(median(BF_estim, 1));
 evi_mean = squeeze(mean(MEs, 1));
 
 % Plotting the log of NLL, AIC, BIC, BF, and model evidence
@@ -156,7 +156,7 @@ for ii = 1:4
     plotMetrics(BICc, BIC_mean, 'BIC', ii);
 
     subplot(4, 5, 5*(ii-1)+4);
-    plotMetrics(BF_estim, BF_mean, 'BF estim', ii);
+    plotMetrics(BF_estim, BF_median, 'BF estim', ii);
 
     subplot(4, 5, 5*(ii-1)+5);
     plotMetrics(MEs, evi_mean, 'model evidence', ii);
