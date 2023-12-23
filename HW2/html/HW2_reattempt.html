@@ -1,0 +1,309 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW2_reattempt</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-12-23"><meta name="DC.source" content="HW2_reattempt.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Initialization</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>The experiment here is a 2AFC method of constant stimuli. There are 10 stimuli levels and a noise level which is 0. There are different conditions that are being simulated: 1. Constant Noise with No Bias 2. Constant Noise with Interval Bias (here, its simulated as right bias) 3. Signal-dependent Noise with No Bias 4. Signal-dependent Noise with Interval Bias 5. History effects (simulated for constant noise with no bias), but can be easily interpolated to other conditions What we see that dprime with interval bias is lower than dprime constant noise as would be expected. We can also see that applying correction to this dprime, makes it match the dprime without interval bias for low stimulus levels. Additionally, dprime with signal-dependent noise with interval bias is also lower than corresponding with constant noise which can also be fixed using the correction factor. Crucial thing is that the signal-dependent noise impacts the dprime as a function of stimulus level as would be expected. I have also attempted modeling history-dependent effects. Basically, I am biasing the responses based on whether the previous 5 trials therby creating a sort of sequential bias. Note that the history effect looks awfully like the interval-bias in dprime uncorrected plot. However, it cannot be fixed by correction for bias as would be expected. Addtionally, dprimes are compared as pairwise plots which essentially tell the same story and model-fitting to dprime is done using cumulative normal psychometric function.</p><h2 id="3">Initialization</h2><pre class="codeinput">nStim = 10;  <span class="comment">% Number of stimuli</span>
+nTrials = 1e3;
+totalTrials = nStim * nTrials;
+stimuli = linspace(1, 6, nStim);  <span class="comment">% Stimulus - levels selected</span>
+noiseLvl = 0;  <span class="comment">% Noise level</span>
+constNoise = 0.6; <span class="comment">% Constant noise</span>
+intervalBias = 0.5; <span class="comment">% Bias value, get interesting plots when bias = 1 and -1 so this is correct!</span>
+
+<span class="comment">% Plot stimulus and noise distributions</span>
+<span class="comment">% Visualziing stimuli and noise ditributions to make sure the task is hard</span>
+<span class="comment">% enough but not too hard</span>
+figure();
+x = linspace(-4, 10, 1000);
+<span class="keyword">for</span> i = 1:nStim
+    y = normpdf(x, stimuli(i), 1);
+    fill(x, y, <span class="string">'b'</span>, <span class="string">'FaceAlpha'</span>, 0.3, <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+    hold <span class="string">on</span>;
+<span class="keyword">end</span>
+fill(x, normpdf(x, noiseLvl, 1), <span class="string">'r'</span>, <span class="string">'FaceAlpha'</span>, 0.5);
+hStimulus = plot(NaN, NaN, <span class="string">'b'</span>, <span class="string">'DisplayName'</span>, <span class="string">'Stimulus'</span>);
+hNoise = plot(NaN, NaN, <span class="string">'r'</span>, <span class="string">'DisplayName'</span>, <span class="string">'Noise'</span>);
+xlabel(<span class="string">'Stimulus/Noise Level'</span>);
+ylabel(<span class="string">'Probability Density'</span>);
+title(<span class="string">'Distributions for Stimuli and Noise'</span>);
+legend([hStimulus, hNoise], <span class="string">'Location'</span>, <span class="string">'northeast'</span>);
+
+<span class="comment">% Simulate side where the signal is on each trial uniformly</span>
+<span class="comment">% Seq is the sequence of stimuli levels, chosen randomly. One step close to</span>
+<span class="comment">% adding history effects :/</span>
+side = randsample([-1, 1], totalTrials, true);
+seq = repmat(stimuli, 1, nTrials);
+seq = seq(randperm(length(seq)));
+
+dP1 = compute_dprime(stimuli, seq, side, <span class="string">'constant'</span>, 0);
+dP2 = compute_dprime(stimuli, seq, side, <span class="string">'constant'</span>, intervalBias);
+dP3 = compute_dprime(stimuli, seq, side, <span class="string">'signal-dependent'</span>, 0);
+dP4 = compute_dprime(stimuli, seq, side, <span class="string">'signal-dependent'</span>, intervalBias);
+dP5 = compute_dprime(stimuli, seq, side, <span class="string">'constant'</span>, 0, 1);
+
+figure();
+hold <span class="string">on</span>;
+plot(stimuli, dP1, <span class="string">'ro-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'ConstantNoise NoBias'</span>)
+plot(stimuli, dP2, <span class="string">'b*-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'ConstantNoise WithBias'</span>)
+plot(stimuli, dP3, <span class="string">'ko-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'SignalNoise NoBias'</span>)
+plot(stimuli, dP4, <span class="string">'m*-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'SignalNoise WithBias'</span>)
+plot(stimuli, dP5, <span class="string">'gs-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'History Effect'</span>)
+xlabel(<span class="string">'Stimulus Level'</span>)
+ylabel(<span class="string">'d-prime without correction'</span>)
+
+<span class="comment">% dprime corrected for bias conditions: dprime corrected = dprime * sqrt(2)</span>
+<span class="comment">% for interval bias</span>
+figure();
+hold <span class="string">on</span>;
+plot(stimuli, dP1, <span class="string">'ro-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'ConstantNoise NoBias'</span>)
+plot(stimuli, dP2*sqrt(2), <span class="string">'b*-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'ConstantNoise WithBias'</span>)
+plot(stimuli, dP3, <span class="string">'ko-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'SignalNoise NoBias'</span>)
+plot(stimuli, dP4*sqrt(2), <span class="string">'m*-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'SignalNoise WithBias'</span>)
+plot(stimuli, dP5*sqrt(2), <span class="string">'gs-'</span>, <span class="string">'DisplayName'</span>, <span class="string">'History Effect'</span>)
+xlabel(<span class="string">'Stimulus Level'</span>)
+ylabel(<span class="string">'d-prime with correction'</span>)
+legend(<span class="string">'Location'</span>, <span class="string">'southeast'</span>)
+
+<span class="comment">% Create a matrix to hold d-prime values for easy access</span>
+dPMatrix = {dP1, dP2, dP3, dP4, dP5};
+labels = {<span class="string">'Constant Noise No Bias'</span>, <span class="string">'Constant Noise Interval Bias'</span>, <span class="keyword">...</span>
+          <span class="string">'Signal-dependent Noise No Bias'</span>, <span class="string">'Signal-dependent Noise Interval Bias'</span>, <span class="keyword">...</span>
+          <span class="string">'History Effect'</span>};
+figure();
+<span class="keyword">for</span> i = 1:length(dPMatrix)
+    <span class="keyword">for</span> j = 1:length(dPMatrix)
+        <span class="keyword">if</span> j &lt;= i
+            subplot(length(dPMatrix), length(dPMatrix), (i-1)*length(dPMatrix)+j);
+            scatter(dPMatrix{j}, dPMatrix{i}, <span class="string">'filled'</span>);
+            hold <span class="string">on</span>;
+            maxVal = max([dPMatrix{j}; dPMatrix{i}]);
+            plot([0 maxVal], [0 maxVal], <span class="string">'k-'</span>, <span class="string">'LineWidth'</span>, 1.4);
+            xlabel(sprintf(<span class="string">'d-prime %d '</span>, j));
+            ylabel(sprintf(<span class="string">'d-prime %d '</span>, i));
+            xlim([0 maxVal]);
+            ylim([0 maxVal]);
+            hold <span class="string">off</span>;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+sgtitle(<span class="string">'Scatterplot of uncorrected d-prime Values by Condition'</span>);
+
+<span class="comment">% Fitting the cumulative normal psychometric functions to dprime</span>
+fitResults = cell(1, length(dPMatrix));
+gaussEqn = <span class="string">'a*normcdf(x, b, c) + d'</span>;
+startPoints = [max(cellfun(@max, dPMatrix)), median(stimuli), 1, 0];
+figure();
+<span class="keyword">for</span> i = 1:length(dPMatrix)
+    [fitResult, gof] = fit(stimuli', dPMatrix{i}, gaussEqn, <span class="string">'Start'</span>, startPoints);
+    fitResults{i} = fitResult;
+    subplot(2, 3, i);
+    plot(fitResult, stimuli, dPMatrix{i});
+    title(sprintf(<span class="string">'Fit of d-prime Condition %d\n(R2: %0.2f)'</span>, i, gof.rsquare));
+    xlabel(<span class="string">'Stimulus Level'</span>);
+    ylabel(<span class="string">'d-prime'</span>);
+    legend(<span class="string">'Location'</span>, <span class="string">'southeast'</span>)
+<span class="keyword">end</span>
+sgtitle(<span class="string">'Fits of d-prime Conditions'</span>);
+</pre><img vspace="5" hspace="5" src="HW2_reattempt_01.png" alt=""> <img vspace="5" hspace="5" src="HW2_reattempt_02.png" alt=""> <img vspace="5" hspace="5" src="HW2_reattempt_03.png" alt=""> <img vspace="5" hspace="5" src="HW2_reattempt_04.png" alt=""> <img vspace="5" hspace="5" src="HW2_reattempt_05.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear; close all; clc;
+%%
+% The experiment here is a 2AFC method of constant stimuli. There are 10
+% stimuli levels and a noise level which is 0. There are different
+% conditions that are being simulated:
+% 1. Constant Noise with No Bias
+% 2. Constant Noise with Interval Bias (here, its simulated as right bias)
+% 3. Signal-dependent Noise with No Bias
+% 4. Signal-dependent Noise with Interval Bias
+% 5. History effects (simulated for constant noise with no bias), but can
+% be easily interpolated to other conditions
+% What we see that dprime with interval bias is lower than dprime constant
+% noise as would be expected. We can also see that applying correction to
+% this dprime, makes it match the dprime without interval bias for low
+% stimulus levels.
+% Additionally, dprime with signal-dependent noise with interval bias is
+% also lower than corresponding with constant noise which can also be fixed
+% using the correction factor. Crucial thing is that the signal-dependent
+% noise impacts the dprime as a function of stimulus level as would be
+% expected.
+% I have also attempted modeling history-dependent effects. Basically, I am
+% biasing the responses based on whether the previous 5 trials therby
+% creating a sort of sequential bias. Note that the history effect looks
+% awfully like the interval-bias in dprime uncorrected plot. However, it
+% cannot be fixed by correction for bias as would be expected.
+% Addtionally, dprimes are compared as pairwise plots which essentially
+% tell the same story and model-fitting to dprime is done using cumulative
+% normal psychometric function.
+%% Initialization
+nStim = 10;  % Number of stimuli
+nTrials = 1e3;
+totalTrials = nStim * nTrials;  
+stimuli = linspace(1, 6, nStim);  % Stimulus - levels selected
+noiseLvl = 0;  % Noise level
+constNoise = 0.6; % Constant noise
+intervalBias = 0.5; % Bias value, get interesting plots when bias = 1 and -1 so this is correct!
+
+% Plot stimulus and noise distributions
+% Visualziing stimuli and noise ditributions to make sure the task is hard
+% enough but not too hard
+figure();
+x = linspace(-4, 10, 1000); 
+for i = 1:nStim
+    y = normpdf(x, stimuli(i), 1); 
+    fill(x, y, 'b', 'FaceAlpha', 0.3, 'EdgeColor', 'none'); 
+    hold on;
+end
+fill(x, normpdf(x, noiseLvl, 1), 'r', 'FaceAlpha', 0.5);
+hStimulus = plot(NaN, NaN, 'b', 'DisplayName', 'Stimulus');
+hNoise = plot(NaN, NaN, 'r', 'DisplayName', 'Noise');
+xlabel('Stimulus/Noise Level');
+ylabel('Probability Density');
+title('Distributions for Stimuli and Noise');
+legend([hStimulus, hNoise], 'Location', 'northeast');
+
+% Simulate side where the signal is on each trial uniformly
+% Seq is the sequence of stimuli levels, chosen randomly. One step close to
+% adding history effects :/
+side = randsample([-1, 1], totalTrials, true);
+seq = repmat(stimuli, 1, nTrials);
+seq = seq(randperm(length(seq)));
+
+dP1 = compute_dprime(stimuli, seq, side, 'constant', 0);
+dP2 = compute_dprime(stimuli, seq, side, 'constant', intervalBias);
+dP3 = compute_dprime(stimuli, seq, side, 'signal-dependent', 0);
+dP4 = compute_dprime(stimuli, seq, side, 'signal-dependent', intervalBias);
+dP5 = compute_dprime(stimuli, seq, side, 'constant', 0, 1);
+
+figure();
+hold on;
+plot(stimuli, dP1, 'ro-', 'DisplayName', 'ConstantNoise NoBias')
+plot(stimuli, dP2, 'b*-', 'DisplayName', 'ConstantNoise WithBias')
+plot(stimuli, dP3, 'ko-', 'DisplayName', 'SignalNoise NoBias')
+plot(stimuli, dP4, 'm*-', 'DisplayName', 'SignalNoise WithBias')
+plot(stimuli, dP5, 'gs-', 'DisplayName', 'History Effect')
+xlabel('Stimulus Level')
+ylabel('d-prime without correction')
+
+% dprime corrected for bias conditions: dprime corrected = dprime * sqrt(2)
+% for interval bias
+figure();
+hold on;
+plot(stimuli, dP1, 'ro-', 'DisplayName', 'ConstantNoise NoBias')
+plot(stimuli, dP2*sqrt(2), 'b*-', 'DisplayName', 'ConstantNoise WithBias')
+plot(stimuli, dP3, 'ko-', 'DisplayName', 'SignalNoise NoBias')
+plot(stimuli, dP4*sqrt(2), 'm*-', 'DisplayName', 'SignalNoise WithBias')
+plot(stimuli, dP5*sqrt(2), 'gs-', 'DisplayName', 'History Effect')
+xlabel('Stimulus Level')
+ylabel('d-prime with correction')
+legend('Location', 'southeast')
+
+% Create a matrix to hold d-prime values for easy access
+dPMatrix = {dP1, dP2, dP3, dP4, dP5};
+labels = {'Constant Noise No Bias', 'Constant Noise Interval Bias', ...
+          'Signal-dependent Noise No Bias', 'Signal-dependent Noise Interval Bias', ...
+          'History Effect'};
+figure();
+for i = 1:length(dPMatrix)
+    for j = 1:length(dPMatrix)
+        if j <= i
+            subplot(length(dPMatrix), length(dPMatrix), (i-1)*length(dPMatrix)+j);
+            scatter(dPMatrix{j}, dPMatrix{i}, 'filled');
+            hold on;
+            maxVal = max([dPMatrix{j}; dPMatrix{i}]);
+            plot([0 maxVal], [0 maxVal], 'k-', 'LineWidth', 1.4);
+            xlabel(sprintf('d-prime %d ', j));
+            ylabel(sprintf('d-prime %d ', i));
+            xlim([0 maxVal]);
+            ylim([0 maxVal]);
+            hold off;
+        end
+    end
+end
+sgtitle('Scatterplot of uncorrected d-prime Values by Condition');
+
+% Fitting the cumulative normal psychometric functions to dprime
+fitResults = cell(1, length(dPMatrix));
+gaussEqn = 'a*normcdf(x, b, c) + d';
+startPoints = [max(cellfun(@max, dPMatrix)), median(stimuli), 1, 0];
+figure();
+for i = 1:length(dPMatrix)
+    [fitResult, gof] = fit(stimuli', dPMatrix{i}, gaussEqn, 'Start', startPoints);
+    fitResults{i} = fitResult;
+    subplot(2, 3, i);
+    plot(fitResult, stimuli, dPMatrix{i});
+    title(sprintf('Fit of d-prime Condition %d\n(R2: %0.2f)', i, gof.rsquare));
+    xlabel('Stimulus Level');
+    ylabel('d-prime');
+    legend('Location', 'southeast')
+end
+sgtitle('Fits of d-prime Conditions');
+
+
+##### SOURCE END #####
+--></body></html>
